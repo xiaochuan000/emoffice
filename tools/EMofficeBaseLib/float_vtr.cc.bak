@@ -1,0 +1,180 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <math.h>
+#include "vtr.h"
+
+using namespace std;
+
+vtr::vtr(double xval, double yval, double zval)
+{
+  x = xval;
+  y = yval;
+  z = zval;
+}
+
+void vtr::reset()
+{
+  x = y = z = 0.0;
+}
+
+void vtr::negate() 
+{ 
+  x = -x;
+  y = -y;
+  z = -z;
+}
+
+void vtr::setvtr(double xval, double yval, double zval)
+{
+  x = xval;
+  y = yval;
+  z = zval;
+}
+
+void vtr::addvtr(double xval, double yval, double zval)
+{
+  x += xval;
+  y += yval;
+  z += zval;
+}
+
+void vtr::subvtr(double xval, double yval, double zval)
+{
+  x -= xval;
+  y -= yval;
+  z -= zval;
+}
+
+double vtr::getx() const { return x; }
+double vtr::gety() const { return y; }
+double vtr::getz() const { return z; }
+
+vtr vtr::operator + (const vtr &operand2) const
+{
+  vtr sum;
+
+  sum.setvtr(x + operand2.x, 
+	     y + operand2.y,
+	     z + operand2.z);
+
+  return sum;
+}
+
+vtr vtr::operator-(const vtr &operand2) const
+{
+  vtr sub;
+
+  sub.setvtr(x - operand2.x,
+	     y - operand2.y,
+	     z - operand2.z);
+  
+  return sub;
+}
+
+vtr vtr::operator*(const vtr &operand2) const
+{
+  vtr product;
+  double xval, yval, zval;
+
+  xval = y * operand2.z - z * operand2.y;
+  yval = -(x * operand2.z - z * operand2.x);
+  zval = x * operand2.y - y * operand2.x;
+  product.setvtr(xval, yval, zval);
+
+  return product;
+}
+
+vtr vtr::operator*(const double &val) const
+{
+  vtr product;
+
+  product.setvtr(x * val,
+		 y * val,
+		 z * val);
+
+  return product;
+}
+
+vtr vtr::operator/(const double &val) const
+{
+  vtr division;
+  
+  division.setvtr(x / val,
+		  y / val,
+		  z / val);
+  
+  return division;
+}
+
+vtr &vtr::operator=(const vtr &right)
+{
+  x = right.x;
+  y = right.y;
+  z = right.z;
+
+  return *this;
+}
+
+double dotP(vtr v1, vtr v2)
+{
+  double product;
+
+  product = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+
+  return product;
+}
+
+void vtr::unitvtr()
+{
+  double magnitude;
+
+  magnitude = x * x +
+    y * y +
+    z * z;
+  magnitude = sqrt(magnitude);
+  x = x / magnitude;
+  y = y / magnitude;
+  z = z / magnitude;
+}
+
+void vtr::Scale(double scale) 
+{
+  double mag;
+
+  mag = magnitude();
+  mag = scale / mag;
+
+  x *= mag;
+  y *= mag;
+  z *= mag;
+}
+
+void vtr::print()
+{
+  cout << "( " << x << ", " << y << ", " << z << ")" << endl;
+}
+
+double vtr::magSquare() { return (x * x + y * y + z * z); }
+
+double vtr::magnitude()
+{
+  double mag;
+
+  mag = x * x + y * y + z * z;
+  mag = sqrt(mag);
+
+  return mag;
+}
+
+double Length(vtr vv)
+{
+  return vv.magnitude();
+}
+
+double Determinant(vtr a, vtr b, vtr c)
+{
+  return (a.x * (b.y * c.z - b.z * c.y) -
+	  a.y * (b.x * c.z - c.x * b.z) +
+	  a.z * (b.x * c.y - c.x * b.y));
+}
